@@ -51,19 +51,19 @@ type Screen = 'welcome' | 'sessions' | 'chat';
 
 const { width } = Dimensions.get('window');
 
-// Logo component drawn with Views
+// Logo component — stylized "E" with graduation cap accent
 function Logo({ size = 80 }: { size?: number }) {
   return (
-    <View style={[logoStyles.container, { width: size, height: size, borderRadius: size * 0.28 }]}>
-      <View style={[logoStyles.innerRing, { width: size * 0.75, height: size * 0.75, borderRadius: size * 0.375 }]}>
-        <View style={[logoStyles.brain, { width: size * 0.4, height: size * 0.4 }]}>
-          <View style={[logoStyles.brainLine, { top: '25%', width: '80%' }]} />
-          <View style={[logoStyles.brainLine, { top: '50%', width: '60%' }]} />
-          <View style={[logoStyles.brainLine, { top: '75%', width: '70%' }]} />
-        </View>
-      </View>
-      <View style={[logoStyles.sparkle, { top: size * 0.08, right: size * 0.08 }]}>
-        <View style={logoStyles.sparkleInner} />
+    <View style={[logoStyles.container, { width: size, height: size, borderRadius: size * 0.24 }]}>
+      {/* Graduation cap */}
+      <View style={[logoStyles.capTop, { width: size * 0.5, height: size * 0.12, top: size * 0.15 }]} />
+      <View style={[logoStyles.capTassel, { top: size * 0.15, right: size * 0.22, width: size * 0.08, height: size * 0.2 }]} />
+      {/* Letter E */}
+      <View style={[logoStyles.letterE, { width: size * 0.38, height: size * 0.45, top: size * 0.32 }]}>
+        <View style={[logoStyles.eLine, { top: 0, width: '100%' }]} />
+        <View style={[logoStyles.eLine, { top: '45%', width: '70%' }]} />
+        <View style={[logoStyles.eLine, { bottom: 0, width: '100%' }]} />
+        <View style={[logoStyles.eVertical]} />
       </View>
     </View>
   );
@@ -71,49 +71,44 @@ function Logo({ size = 80 }: { size?: number }) {
 
 const logoStyles = StyleSheet.create({
   container: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6C63FF',
+    shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.45,
     shadowRadius: 20,
     elevation: 12,
   },
-  innerRing: {
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  brain: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  brainLine: {
+  capTop: {
     position: 'absolute',
-    height: 3,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 2,
-    left: '10%',
-  },
-  sparkle: {
-    position: 'absolute',
-    width: 14,
-    height: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sparkleInner: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
     backgroundColor: '#fbbf24',
-    shadowColor: '#fbbf24',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-    elevation: 4,
+    borderRadius: 2,
+    transform: [{ rotate: '-3deg' }],
+  },
+  capTassel: {
+    position: 'absolute',
+    backgroundColor: '#fbbf24',
+    borderRadius: 2,
+  },
+  letterE: {
+    position: 'absolute',
+  },
+  eLine: {
+    position: 'absolute',
+    height: 4,
+    backgroundColor: '#fff',
+    borderRadius: 2,
+    left: 0,
+  },
+  eVertical: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: '#fff',
+    borderRadius: 2,
   },
 });
 
@@ -318,7 +313,7 @@ export default function App() {
             <Logo size={100} />
           </Animated.View>
 
-          <Text style={styles.welcomeTitle}>EduAI</Text>
+          <Text style={styles.welcomeTitle}>Eduti</Text>
           <Text style={styles.welcomeTagline}>Твой персональный AI-репетитор</Text>
 
           <View style={styles.featureList}>
@@ -483,7 +478,7 @@ export default function App() {
           <Text style={styles.chatHeaderTitle} numberOfLines={1}>
             {currentSession?.title}
           </Text>
-          <Text style={styles.chatHeaderSub}>gpt-5-mini</Text>
+          <Text style={styles.chatHeaderSub}>claude-haiku</Text>
         </View>
         <View style={styles.onlineDot} />
       </View>
@@ -619,7 +614,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
   },
   featureText: {
     color: '#ccc',
@@ -628,13 +623,13 @@ const styles = StyleSheet.create({
   startBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 16,
     marginTop: 48,
     gap: 10,
-    shadowColor: '#6C63FF',
+    shadowColor: '#4F46E5',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -681,7 +676,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -707,7 +702,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   retryText: {
-    color: '#6C63FF',
+    color: '#4F46E5',
     fontSize: 13,
     fontWeight: '600',
     marginTop: 8,
@@ -845,7 +840,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     alignItems: 'center',
   },
   modalBtnConfirmText: {
@@ -877,7 +872,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   emptyBtn: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     paddingHorizontal: 28,
     paddingVertical: 14,
     borderRadius: 12,
@@ -909,7 +904,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   backArrow: {
-    color: '#6C63FF',
+    color: '#4F46E5',
     fontSize: 22,
     fontWeight: '600',
     marginTop: -2,
@@ -982,7 +977,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 10,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
@@ -1000,7 +995,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   bubbleUser: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     borderBottomRightRadius: 6,
   },
   bubbleAi: {
@@ -1034,7 +1029,7 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     opacity: 0.4,
   },
   dot1: { opacity: 0.9 },
@@ -1075,7 +1070,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#6C63FF',
+    backgroundColor: '#4F46E5',
     justifyContent: 'center',
     alignItems: 'center',
   },
