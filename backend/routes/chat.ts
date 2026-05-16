@@ -5,8 +5,8 @@ import { RowDataPacket } from 'mysql2';
 const router = Router();
 
 const API_KEY = process.env.AI_API_KEY || 'YOUR_API_KEY';
-const API_BASE_URL = process.env.AI_BASE_URL || 'https://gate.trinity.tg/orion/v1';
-const AI_MODEL = process.env.AI_MODEL || 'gpt-5.4';
+const API_BASE_URL = process.env.AI_BASE_URL || 'https://gate.trinity.tg/aurora/v1';
+const AI_MODEL = process.env.AI_MODEL || 'claude-haiku-4-5';
 
 const SYSTEM_PROMPT = `Ты — AI-репетитор для подготовки к ОГЭ и ЕГЭ. Твоя задача:
 1. Помогать ученику разбирать задания из экзаменов
@@ -53,33 +53,29 @@ router.post('/:id/messages', async (req, res) => {
       [sessionId]
     );
 
-    // Формируем входное сообщение для AI (системный промпт + история)
-    const inputParts = [
-      { role: 'system' as const, content: SYSTEM_PROMPT },
-      ...history.map((msg: RowDataPacket) => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content as string,
-      })),
-    ];
-
-    // Собираем input как текст с контекстом
-    const inputText = inputParts.map((m) => `[${m.role}]: ${m.content}`).join('\n\n');
+    // Формируем messages для Claude API (system передаётся отдельно)
+    const messages = history.map((msg: RowDataPacket) => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content as string,
+    }));
 
     // Retry with exponential backoff on overload
     let aiContent = '';
     const maxRetries = 3;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch(`${API_BASE_URL}/responses`, {
+        const response = await fetch(`${API_BASE_URL}/messages`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${API_KEY}`,
+            'x-api-key': API_KEY,
+            'anthropic-version': '2023-06-01',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             model: AI_MODEL,
-            input: inputText,
-            max_output_tokens: 4096,
+            max_tokens: 4096,
+            system: SYSTEM_PROMPT,
+            messages,
           }),
         });
 
@@ -91,14 +87,10 @@ router.post('/:id/messages', async (req, res) => {
         }
 
         const data: any = await response.json();
-        aiContent = data.output?.[0]?.content?.[0]?.text
-          || data.choices?.[0]?.message?.content
-          || data.content?.[0]?.text
-          || data.output
-          || 'Не удалось получить ответ';
+        aiContent = data.content?.[0]?.text || 'Не удалось получить ответ';
         break;
       } catch (err: any) {
-        if ((err.status === 502 || err.status === 503 || err.status === 429) && attempt < maxRetries) {
+        if ((err.status === 502 || err.status === 503 || err.status === 429 || err.status === 529) && attempt < maxRetries) {
           const delay = 2000 * Math.pow(2, attempt);
           console.log(`API error ${err.status}, retry ${attempt + 1}/${maxRetries} in ${delay}ms...`);
           await new Promise((r) => setTimeout(r, delay));
