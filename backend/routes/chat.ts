@@ -1,14 +1,12 @@
 import { Router } from 'express';
 import pool from '../db';
 import { RowDataPacket } from 'mysql2';
-import OpenAI from 'openai';
 
 const router = Router();
 
-const client = new OpenAI({
-  apiKey: process.env.AI_API_KEY || 'YOUR_API_KEY',
-  baseURL: process.env.AI_BASE_URL || 'https://gate.trinity.tg/orion/v1',
-});
+const API_KEY = process.env.AI_API_KEY || 'YOUR_API_KEY';
+const API_BASE_URL = process.env.AI_BASE_URL || 'https://gate.trinity.tg/orion/v1';
+const AI_MODEL = process.env.AI_MODEL || 'gpt-5.4';
 
 const SYSTEM_PROMPT = `Ты — AI-репетитор для подготовки к ОГЭ и ЕГЭ. Твоя задача:
 1. Помогать ученику разбирать задания из экзаменов
@@ -55,8 +53,8 @@ router.post('/:id/messages', async (req, res) => {
       [sessionId]
     );
 
-    // Формируем запрос к AI
-    const messages = [
+    // Формируем входное сообщение для AI (системный промпт + история)
+    const inputParts = [
       { role: 'system' as const, content: SYSTEM_PROMPT },
       ...history.map((msg: RowDataPacket) => ({
         role: msg.role as 'user' | 'assistant',
@@ -64,24 +62,49 @@ router.post('/:id/messages', async (req, res) => {
       })),
     ];
 
+    // Собираем input как текст с контекстом
+    const inputText = inputParts.map((m) => `[${m.role}]: ${m.content}`).join('\n\n');
+
     // Retry with exponential backoff on overload
     let aiContent = '';
     const maxRetries = 3;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const response = await client.chat.completions.create({
-          model: process.env.AI_MODEL || 'gpt-5-mini',
-          messages,
+        const response = await fetch(`${API_BASE_URL}/responses`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: AI_MODEL,
+            input: inputText,
+            max_output_tokens: 4096,
+          }),
         });
-        aiContent = response.choices[0]?.message?.content || 'Не удалось получить ответ';
+
+        if (!response.ok) {
+          const errBody = await response.text();
+          const err: any = new Error(`API returned ${response.status}: ${errBody}`);
+          err.status = response.status;
+          throw err;
+        }
+
+        const data: any = await response.json();
+        aiContent = data.output?.[0]?.content?.[0]?.text
+          || data.choices?.[0]?.message?.content
+          || data.content?.[0]?.text
+          || data.output
+          || 'Не удалось получить ответ';
         break;
       } catch (err: any) {
-        if (err.status === 502 && attempt < maxRetries) {
-          const delay = 2000 * Math.pow(2, attempt); // 2s, 4s, 8s
-          console.log(`API overloaded, retry ${attempt + 1}/${maxRetries} in ${delay}ms...`);
+        if ((err.status === 502 || err.status === 503 || err.status === 429) && attempt < maxRetries) {
+          const delay = 2000 * Math.pow(2, attempt);
+          console.log(`API error ${err.status}, retry ${attempt + 1}/${maxRetries} in ${delay}ms...`);
           await new Promise((r) => setTimeout(r, delay));
           continue;
         }
+        console.error('AI API error:', err.message);
         throw err;
       }
     }
