@@ -6,7 +6,10 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "plugins": [
+      "./plugins/withCleartextTraffic"
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -21,11 +24,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#4F46E5"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.eduti.app"
+      "package": "com.eduti.app",
+      "usesCleartextTraffic": true,
+      "navigationBar": {
+        "visible": "immersive"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6951bf71-2a63-4538-8885-12a07eda2fdb"
+      }
     }
   }
 }

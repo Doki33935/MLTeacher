@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eduti — AI-репетитор</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+    <style>
+        :root {
+            --r-background-color: #0a0a16;
+            --r-main-color: #e8e8e8;
+            --r-heading-color: #ffffff;
+            --r-link-color: #4F46E5;
+        }
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; color: #fff; margin-bottom: 10px; }
+        .reveal h3 { font-size: 1.1em; color: #a5b4fc; margin-bottom: 15px; }
+        .reveal p, .reveal li { font-size: 0.7em; line-height: 1.5; }
+        .reveal ul { list-style: none; padding: 0; }
+        .reveal ul li::before { content: "→ "; color: #4F46E5; font-weight: bold; }
+        .reveal ul li { margin-bottom: 6px; }
+        .accent { color: #4F46E5; }
+        .stat-box {
+            display: inline-block;
+            background: rgba(79, 70, 229, 0.15);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            border-radius: 14px;
+            padding: 14px 22px;
+            margin: 6px;
+            text-align: center;
+        }
+        .stat-box .number {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #4F46E5;
+            display: block;
+        }
+        .stat-box .label {
+            font-size: 0.6em;
+            color: #888;
+            margin-top: 4px;
+        }
+        .comparison-table {
+            width: 90%;
+            margin: 15px auto 0;
+            border-collapse: collapse;
+            font-size: 0.6em;
+        }
+        .comparison-table th {
+            background: rgba(79, 70, 229, 0.2);
+            padding: 10px 14px;
+            text-align: left;
+        }
+        .comparison-table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #1e1e3a;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .feature-card {
+            background: #12122a;
+            border: 1px solid #1e1e3a;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 6px;
+            display: inline-block;
+            width: 220px;
+            vertical-align: top;
+            text-align: left;
+        }
+        .feature-card h4 {
+            color: #fff;
+            font-size: 0.7em;
+            margin: 0 0 6px 0;
+        }
+        .feature-card p {
+            color: #888;
+            font-size: 0.55em;
+            margin: 0;
+            line-height: 1.4;
+        }
+        .logo-demo {
+            width: 90px;
+            height: 90px;
+            background: #4F46E5;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 30px rgba(79, 70, 229, 0.4);
+            position: relative;
+        }
+        .logo-demo .letter-e {
+            color: #fff;
+            font-size: 44px;
+            font-weight: 900;
+        }
+        .logo-demo .cap {
+            position: absolute;
+            top: 10px;
+            width: 45px;
+            height: 9px;
+            background: #fbbf24;
+            border-radius: 3px;
+            transform: rotate(-3deg);
+        }
+        .timeline {
+            text-align: left;
+            max-width: 550px;
+            margin: 15px auto;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4F46E5;
+            margin-right: 14px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .timeline-item:nth-child(2) .timeline-dot { background: #4ade80; }
+        .timeline-item:nth-child(3) .timeline-dot { background: #fbbf24; }
+        .timeline-item:nth-child(4) .timeline-dot { background: #f472b6; }
+        .timeline-content h4 {
+            color: #fff;
+            font-size: 0.7em;
+            margin: 0 0 3px 0;
+        }
+        .timeline-content p {
+            color: #888;
+            font-size: 0.55em;
+            margin: 0;
+        }
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .tech-item {
+            background: #12122a;
+            border: 1px solid #1e1e3a;
+            border-radius: 10px;
+            padding: 10px 16px;
+            text-align: center;
+            width: 140px;
+        }
+        .tech-item .tech-name {
+            color: #fff;
+            font-size: 0.65em;
+            font-weight: 700;
+        }
+        .tech-item .tech-desc {
+            color: #666;
+            font-size: 0.5em;
+            margin-top: 3px;
+        }
+        .flow-step {
+            display: inline-block;
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 4px;
+            font-size: 0.55em;
+            color: #e8e8e8;
+        }
+        .flow-arrow {
+            display: inline-block;
+            color: #4F46E5;
+            font-size: 1em;
+            margin: 0 2px;
+            vertical-align: middle;
+        }
+        .two-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        .three-col {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 20px;
+        }
+        .risk-box {
+            background: #1f1215;
+            border: 1px solid #3d1a1a;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 8px auto;
+            max-width: 480px;
+            text-align: left;
+        }
+        .risk-box h4 { color: #ff6b6b; font-size: 0.7em; margin: 0 0 6px; }
+        .risk-box p { color: #ccc; font-size: 0.55em; margin: 0; }
+        .mitigation-box {
+            background: #0f1f15;
+            border: 1px solid #1a3d2a;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 8px auto;
+            max-width: 480px;
+            text-align: left;
+        }
+        .mitigation-box h4 { color: #4ade80; font-size: 0.7em; margin: 0 0 6px; }
+        .mitigation-box p { color: #ccc; font-size: 0.55em; margin: 0; line-height: 1.5; }
+        .screenshot {
+            border-radius: 12px;
+            border: 2px solid #252545;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            height: 500px;
+            width: 225px;
+            object-fit: cover;
+            object-position: top;
+        }
+        .screenshot-label {
+            font-size: 0.55em;
+            color: #888;
+            margin-top: 0;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .screenshot-wrap {
+            display: inline-block;
+            text-align: center;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ТИТУЛЬНЫЙ СЛАЙД -->
+            <section>
+                <div class="logo-demo">
+                    <div class="cap"></div>
+                    <span class="letter-e">E</span>
+                </div>
+                <h1>Eduti</h1>
+                <p style="font-size: 1em; color: #888;">AI-репетитор для подготовки к ОГЭ и ЕГЭ</p>
+                <p style="font-size: 0.55em; color: #555; margin-top: 30px;">2025 | MVP</p>
+            </section>
+
+            <!-- СЛАЙД 2: ПРОБЛЕМА -->
+            <section>
+                <h2>Проблема</h2>
+                <h3>Ученик не знает, что именно он не знает</h3>
+                <div class="two-col">
+                    <div style="text-align: left; max-width: 380px;">
+                        <p><strong style="color: #fff;">Артём, 15 лет, Саратов</strong></p>
+                        <p>Через 4 месяца сдаёт ОГЭ. Семья не может позволить репетитора. Готовится сам: YouTube, банк ФИПИ. Но не понимает, почему ошибается.</p>
+                        <p style="margin-top: 15px; color: #ff6b6b; font-size: 0.65em;">Без персонального анализа ошибок подготовка превращается в лотерею.</p>
+                    </div>
+                    <div>
+                        <div class="stat-box">
+                            <span class="number">62%</span>
+                            <span class="label">семей не могут<br>позволить репетитора</span>
+                        </div>
+                        <br>
+                        <div class="stat-box">
+                            <span class="number">80%</span>
+                            <span class="label">времени тратится<br>на освоенные темы</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 3: СУЩЕСТВУЮЩИЕ РЕШЕНИЯ -->
+            <section>
+                <h2>Существующие решения</h2>
+                <h3>Почему они не закрывают проблему</h3>
+                <table class="comparison-table">
+                    <tr><th>Решение</th><th>Ограничение</th></tr>
+                    <tr><td><strong>YouTube</strong></td><td>Пассивное потребление. Нет обратной связи, нет адаптации</td></tr>
+                    <tr><td><strong>Банки заданий</strong></td><td>Есть ответ, но нет объяснения хода решения</td></tr>
+                    <tr><td><strong>Репетиторы</strong></td><td>60 000–150 000 руб. за курс. Недоступно большинству</td></tr>
+                    <tr><td><strong>Приложения</strong></td><td>Тесты без адаптивности. Одинаковый контент для всех</td></tr>
+                </table>
+                <p style="margin-top: 20px; color: #ff6b6b; font-size: 0.65em;">
+                    Последствия: низкий балл → закрытые двери → усиление неравенства
+                </p>
+            </section>
+
+            <!-- СЛАЙД 4: АКТУАЛЬНОСТЬ -->
+            <section>
+                <h2>Актуальность</h2>
+                <div style="margin: 20px 0;">
+                    <div class="stat-box">
+                        <span class="number">2+ млн</span>
+                        <span class="label">учеников сдают<br>ОГЭ/ЕГЭ ежегодно</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">97%</span>
+                        <span class="label">подростков имеют<br>смартфон</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">&lt;1 руб.</span>
+                        <span class="label">стоимость одного<br>AI-диалога</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.7em; color: #a5b4fc; margin-top: 15px;">
+                    Зрелость AI + проникновение смартфонов = возможность решить проблему <strong>сейчас</strong>
+                </p>
+            </section>
+
+            <!-- СЛАЙД 5: РЕШЕНИЕ -->
+            <section>
+                <h2>Решение — <span class="accent">Eduti</span></h2>
+                <h3>Ключевые функции MVP</h3>
+                <div>
+                    <div class="feature-card">
+                        <h4>1. Диагностический тест</h4>
+                        <p>AI определяет уровень и пробелы за 5–7 вопросов</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>2. Пошаговый разбор</h4>
+                        <p>Объяснение хода решения, а не просто ответ</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>3. Адаптивный диалог</h4>
+                        <p>AI подстраивает сложность под ученика</p>
+                    </div>
+                </div>
+                <div style="margin-top: 8px;">
+                    <div class="feature-card">
+                        <h4>4. История чатов</h4>
+                        <p>Все диалоги сохраняются для повторения</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>5. Карта пробелов</h4>
+                        <p>Визуализация освоенных и слабых тем</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 6: USER FLOW -->
+            <section>
+                <h2>User Flow</h2>
+                <h3>Путь от открытия до результата</h3>
+                <div>
+                    <span class="flow-step">Открытие<br>приложения</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Начать<br>обучение</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Создать чат<br>(ввод названия)</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Диагностика<br>(5–7 вопросов)</span>
+                </div>
+                <div style="margin-top: 10px;">
+                    <span class="flow-arrow" style="font-size: 1.4em;">↓</span>
+                </div>
+                <div>
+                    <span class="flow-step">Работа над<br>пробелами</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Пошаговый<br>разбор ошибок</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Прогресс и<br>рекомендации</span>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.65em; color: #4ade80;">
+                    Первый полезный результат — через 2 минуты после установки
+                </p>
+            </section>
+
+            <!-- СЛАЙД 7: ЭКРАНЫ — Приветствие и список чатов -->
+            <section>
+                <h2>Экраны приложения</h2>
+                <div class="three-col">
+                    <div class="screenshot-wrap">
+                        <p class="screenshot-label">Приветствие</p>
+                        <img src="1.jpg" class="screenshot" alt="Экран приветствия">
+                    </div>
+                    <div class="screenshot-wrap">
+                        <p class="screenshot-label">Список чатов</p>
+                        <img src="2.jpg" class="screenshot" alt="Список чатов (пусто)">
+                    </div>
+                    <div class="screenshot-wrap">
+                        <p class="screenshot-label">Создание чата</p>
+                        <img src="3.jpg" class="screenshot" alt="Создание чата">
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 8: ЭКРАНЫ — Чаты и диалог -->
+            <section>
+                <h2>Экраны приложения</h2>
+                <div class="two-col">
+                    <div class="screenshot-wrap">
+                        <p class="screenshot-label">Чат создан</p>
+                        <img src="4.jpg" class="screenshot" alt="Список с чатом">
+                    </div>
+                    <div class="screenshot-wrap">
+                        <p class="screenshot-label">Диалог с AI-репетитором</p>
+                        <img src="5.jpg" class="screenshot" alt="Диалог с AI">
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 9: ТЕХНОЛОГИЧЕСКИЙ СТЕК -->
+            <section>
+                <h2>Технологический стек</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <div class="tech-name">React Native</div>
+                        <div class="tech-desc">Мобильное приложение</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Expo</div>
+                        <div class="tech-desc">Сборка и дистрибуция</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Node.js</div>
+                        <div class="tech-desc">Бэкенд API</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">TypeScript</div>
+                        <div class="tech-desc">Типобезопасность</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">MySQL</div>
+                        <div class="tech-desc">База данных</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Claude API</div>
+                        <div class="tech-desc">AI-движок</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">VPS Linux</div>
+                        <div class="tech-desc">Хостинг</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">EAS Build</div>
+                        <div class="tech-desc">Облачная сборка APK</div>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.6em; color: #888;">
+                    Один разработчик. Минимальная сложность. Максимальная скорость итерации.
+                </p>
+            </section>
+
+            <!-- СЛАЙД 10: ПОТЕНЦИАЛ РАЗВИТИЯ -->
+            <section>
+                <h2>Потенциал развития</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>6 месяцев</h4>
+                            <p>Карта пробелов. Система достижений. Мотивация через геймификацию</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>1 год</h4>
+                            <p>Все предметы ОГЭ/ЕГЭ. Генерация персональных вариантов. Расписание подготовки</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>2 года</h4>
+                            <p>Голосовой режим. Групповые чаты. Аналитика для родителей</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h4>3–5 лет</h4>
+                            <p>B2B для школ. Платформа для учителей. Рынки СНГ. Корпоративное обучение</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 11: РИСКИ И МИТИГАЦИЯ -->
+            <section>
+                <h2>Риски и решения</h2>
+                <div class="risk-box">
+                    <h4>Главный риск</h4>
+                    <p>Зависимость от внешнего AI API — доступность, стоимость, качество ответов</p>
+                </div>
+                <div class="mitigation-box">
+                    <h4>Митигация</h4>
+                    <p>
+                        1. Абстракция провайдера — переключение между моделями без изменения клиента<br>
+                        2. Кэширование типовых объяснений — снижение запросов на 40–60%<br>
+                        3. Retry-механизм с exponential backoff<br>
+                        4. Мониторинг стоимости и автопереключение на дешёвую модель
+                    </p>
+                </div>
+            </section>
+
+            <!-- СЛАЙД 12: ИТОГ -->
+            <section>
+                <div class="logo-demo">
+                    <div class="cap"></div>
+                    <span class="letter-e">E</span>
+                </div>
+                <h2>Eduti</h2>
+                <p style="font-size: 0.85em; color: #a5b4fc; margin: 15px 0;">
+                    Делаем качественное образование<br>доступным для каждого ученика
+                </p>
+                <div style="margin-top: 25px;">
+                    <div class="stat-box">
+                        <span class="number">2 млн+</span>
+                        <span class="label">потенциальных<br>пользователей</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">24/7</span>
+                        <span class="label">доступность<br>репетитора</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">0 руб.</span>
+                        <span class="label">стоимость<br>для ученика</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.55em; color: #555; margin-top: 30px;">Спасибо за внимание</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            pdfSeparateFragments: false,
+        });
+    </script>
+    <style media="print">
+        /* Force dark theme in print/PDF */
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+        .reveal, .reveal .slides, .reveal .slides section {
+            background: #0a0a16 !important;
+            color: #e8e8e8 !important;
+        }
+    </style>
+</body>
+</html>

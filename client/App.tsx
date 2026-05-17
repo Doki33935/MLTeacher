@@ -15,23 +15,13 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import Constants from 'expo-constants';
+import * as NavigationBar from 'expo-navigation-bar';
 
 const SERVER_PORT = 3001;
+const API_URL = `http://78.17.111.238:${SERVER_PORT}/api`;
 
-function getApiUrl(): string {
-  if (Platform.OS === 'web') {
-    return `http://localhost:${SERVER_PORT}/api`;
-  }
-  const debuggerHost = Constants.expoConfig?.hostUri ?? Constants.manifest2?.extra?.expoGo?.debuggerHost;
-  if (debuggerHost) {
-    const host = debuggerHost.split(':')[0];
-    return `http://${host}:${SERVER_PORT}/api`;
-  }
-  return `http://10.0.2.2:${SERVER_PORT}/api`;
-}
-
-const API_URL = getApiUrl();
+// Debug: log API URL at startup
+console.log('[Eduti] API_URL:', API_URL);
 
 interface Session {
   id: number;
@@ -128,6 +118,12 @@ export default function App() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
+    // Hide Android navigation bar (immersive mode)
+    if (Platform.OS === 'android') {
+      NavigationBar.setVisibilityAsync('hidden');
+      NavigationBar.setBehaviorAsync('overlay-swipe');
+    }
+
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
       Animated.spring(scaleAnim, { toValue: 1, friction: 8, useNativeDriver: true }),
@@ -150,11 +146,14 @@ export default function App() {
   const loadSessions = async () => {
     try {
       setError(null);
+      console.log('[Eduti] Fetching:', `${API_URL}/sessions`);
       const res = await fetch(`${API_URL}/sessions`);
+      console.log('[Eduti] Response status:', res.status);
       const data = await res.json();
       setSessions(data);
     } catch (e: any) {
-      setError(`Не удалось подключиться к серверу.\n${e.message}`);
+      console.error('[Eduti] Connection error:', e.message, e);
+      setError(`Не удалось подключиться к серверу.\nURL: ${API_URL}/sessions\nОшибка: ${e.message}`);
     }
   };
 
